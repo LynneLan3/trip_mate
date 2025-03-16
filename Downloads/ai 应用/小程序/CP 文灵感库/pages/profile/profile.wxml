@@ -1,0 +1,16 @@
+<view class="container">
+  <!-- 用户信息 -->
+  <view class="user-section">
+    <block wx:if="{{hasUserInfo}}">
+      <text class="nickname">{{userInfo.nickName}}</text>
+    </block>
+    <block wx:else>
+      <button class="login-btn" bindtap="getUserProfile">登录</button>
+    </block>
+  </view>
+
+  <!-- 功能列表 -->
+  <view class="feature-list">
+    <button class="feedback-btn" open-type="feedback">意见反馈</button>
+  </view>
+</view>

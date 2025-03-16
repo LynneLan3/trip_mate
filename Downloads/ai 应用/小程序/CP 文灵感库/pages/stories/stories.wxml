@@ -1,0 +1,33 @@
+<view class="container">
+  <!-- 空状态 -->
+  <view class="empty-container" wx:if="{{!stories.length}}">
+    <text>还没有保存的故事</text>
+    <button class="primary-btn" bindtap="goToCreate">去创作</button>
+  </view>
+
+  <!-- 故事列表 -->
+  <view class="stories-list" wx:else>
+    <view class="story-item" wx:for="{{stories}}" wx:key="id" bindtap="viewStory" data-id="{{item.id}}">
+      <view class="story-header">
+        <text class="title">{{item.character1}} & {{item.character2}}</text>
+        <text class="time">{{item.createTimeText}}</text>
+      </view>
+      
+      <view class="story-meta">
+        <text class="type">{{item.storyType}}</text>
+        <text class="style">{{item.coreStyle}}</text>
+      </view>
+
+      <text class="preview">{{item.content}}</text>
+
+      <view class="story-actions">
+        <button class="action-btn" catchtap="deleteStory" data-id="{{item.id}}">删除</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 新建按钮 -->
+  <view class="fab" wx:if="{{stories.length}}" bindtap="goToCreate">
+    <text>+</text>
+  </view>
+</view>

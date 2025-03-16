@@ -1,0 +1,38 @@
+<view class="container">
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <text>正在加载故事...</text>
+  </view>
+
+  <!-- 错误状态 -->
+  <view class="error-container" wx:elif="{{error}}">
+    <text>{{error}}</text>
+    <button bindtap="goBack" class="back-btn">返回重试</button>
+  </view>
+
+  <!-- 故事内容 -->
+  <block wx:elif="{{story}}">
+    <view class="story-container">
+      <view class="story-header">
+        <text class="title">{{story.character1}} & {{story.character2}}</text>
+        <view class="meta">
+          <text class="type">{{story.storyType}}</text>
+          <text class="style">{{story.coreStyle}}</text>
+        </view>
+      </view>
+
+      <scroll-view scroll-y class="story-content" enable-flex>
+        <text user-select space="nbsp">{{story.content}}</text>
+      </scroll-view>
+    </view>
+
+    <view class="action-bar">
+      <view class="primary-actions">
+        <button class="action-btn" bindtap="copyStory">复制</button>
+        <button class="action-btn" bindtap="saveStory">保存</button>
+      </view>
+      
+      <button class="back-btn" bindtap="goBack">返回</button>
+    </view>
+  </block>
+</view>

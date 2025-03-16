@@ -1,0 +1,162 @@
+.container {
+  min-height: 100vh;
+  background-color: #f2f2f7;
+  padding: 32rpx;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+}
+
+/* 空状态 */
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  text-align: center;
+}
+
+.empty-container text {
+  color: #8e8e93;
+  font-size: 28rpx;
+  margin-bottom: 32rpx;
+}
+
+.primary-btn {
+  min-width: 240rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: #007aff;
+  color: #ffffff;
+  font-size: 32rpx;
+  border-radius: 44rpx;
+  border: none;
+}
+
+.primary-btn::after {
+  display: none;
+}
+
+/* 故事列表 */
+.stories-list {
+  padding-bottom: 120rpx;
+}
+
+.story-item {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.story-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.story-header .title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #000000;
+}
+
+.story-header .time {
+  font-size: 24rpx;
+  color: #8e8e93;
+}
+
+.story-meta {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.type, .style {
+  font-size: 24rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 12rpx;
+}
+
+.type {
+  background: rgba(0, 122, 255, 0.1);
+  color: #007aff;
+}
+
+.style {
+  background: rgba(255, 149, 0, 0.1);
+  color: #ff9500;
+}
+
+.preview {
+  font-size: 28rpx;
+  color: #48484a;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  margin-bottom: 16rpx;
+}
+
+.story-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.action-btn {
+  min-width: 120rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  background: none;
+  color: #ff3b30;
+  border: 1rpx solid #ff3b30;
+  border-radius: 28rpx;
+  font-size: 24rpx;
+  padding: 0 24rpx;
+}
+
+.action-btn::after {
+  display: none;
+}
+
+/* 悬浮按钮 */
+.fab {
+  position: fixed;
+  right: 32rpx;
+  bottom: calc(32rpx + env(safe-area-inset-bottom));
+  width: 96rpx;
+  height: 96rpx;
+  background: #007aff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 16rpx rgba(0, 122, 255, 0.3);
+}
+
+.fab text {
+  color: #ffffff;
+  font-size: 48rpx;
+  font-weight: 300;
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background-color: #000000;
+  }
+
+  .story-item {
+    background: #1c1c1e;
+  }
+
+  .story-header .title {
+    color: #ffffff;
+  }
+
+  .preview {
+    color: #98989d;
+  }
+}

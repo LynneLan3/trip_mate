@@ -1,0 +1,81 @@
+.container {
+  min-height: 100vh;
+  background-color: #f2f2f7;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 用户信息区域 */
+.user-section {
+  padding: 48rpx 32rpx;
+  background: #ffffff;
+  margin-bottom: 24rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nickname {
+  font-size: 36rpx;
+  color: #000000;
+  text-align: center;
+}
+
+.login-btn {
+  min-width: 200rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: #007aff;
+  color: #ffffff;
+  font-size: 32rpx;
+  border-radius: 44rpx;
+  border: none;
+}
+
+.login-btn::after {
+  display: none;
+}
+
+/* 功能列表 */
+.feature-list {
+  background: #ffffff;
+  padding: 0 32rpx;
+}
+
+.feedback-btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: none;
+  color: #000000;
+  font-size: 32rpx;
+  text-align: left;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.feedback-btn::after {
+  display: none;
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background-color: #000000;
+  }
+
+  .user-section,
+  .feature-list {
+    background: #1c1c1e;
+  }
+
+  .nickname,
+  .feedback-btn {
+    color: #ffffff;
+  }
+
+  .login-btn {
+    background: #0a84ff;
+  }
+}

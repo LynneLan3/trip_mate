@@ -1,0 +1,108 @@
+<view class="container">
+  <form bindsubmit="onSubmit">
+    <!-- 角色设定 -->
+    <view class="section">
+      <view class="section-title">角色设定</view>
+      <view class="input-group">
+        <input class="input" name="character1" placeholder="主角1姓名" />
+        <input class="input" name="character2" placeholder="主角2姓名" />
+      </view>
+    </view>
+
+    <!-- 故事类型 -->
+    <view class="section">
+      <view class="section-title">故事类型</view>
+      <view class="tag-group">
+        <view class="tag {{storyTypeIndex === index ? 'selected' : ''}}" 
+              wx:for="{{storyTypes}}" 
+              wx:key="*this" 
+              bindtap="onStoryTypeChange" 
+              data-value="{{index}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 核心风格 -->
+    <view class="section">
+      <view class="section-title">核心风格</view>
+      <view class="tag-group">
+        <view class="tag {{coreStyleIndex === index ? 'selected' : ''}}" 
+              wx:for="{{coreStyles}}" 
+              wx:key="*this" 
+              bindtap="onCoreStyleChange" 
+              data-value="{{index}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 特殊元素 -->
+    <view class="section">
+      <view class="section-title">特殊元素（选填）</view>
+      <view class="tag-group">
+        <view class="tag {{specialElementIndex === index ? 'selected' : ''}}" 
+              wx:for="{{specialElements}}" 
+              wx:key="*this" 
+              bindtap="onSpecialElementChange" 
+              data-value="{{index}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 叙述视角 -->
+    <view class="section">
+      <view class="section-title">叙述视角</view>
+      <view class="tag-group">
+        <view class="tag {{viewpointIndex === index ? 'selected' : ''}}" 
+              wx:for="{{viewpoints}}" 
+              wx:key="*this" 
+              bindtap="onViewpointChange" 
+              data-value="{{index}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 故事梗概 -->
+    <view class="section">
+      <view class="section-title">故事梗概（选填，20字以内）</view>
+      <view class="input-group">
+        <input class="input" 
+               name="storySummary" 
+               placeholder="简短描述故事主要情节" 
+               maxlength="20" />
+      </view>
+    </view>
+
+    <!-- 字数选择 -->
+    <view class="section">
+      <view class="section-title">字数选择</view>
+      <view class="tag-group">
+        <view class="tag {{wordCountIndex === index ? 'selected' : ''}}" 
+              wx:for="{{wordCounts}}" 
+              wx:key="*this" 
+              bindtap="onWordCountChange" 
+              data-value="{{index}}">
+          {{item}}字
+        </view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-section">
+      <button class="submit-btn" form-type="submit" loading="{{isGenerating}}">
+        {{isGenerating ? '正在创作中...' : '开始创作'}}
+      </button>
+    </view>
+  </form>
+
+  <!-- 加载状态遮罩 -->
+  <view class="loading-mask" wx:if="{{isGenerating}}">
+    <view class="loading-content">
+      <text class="loading-text">正在创作精彩故事...</text>
+      <text class="loading-tips">这可能需要一些时间，请耐心等待</text>
+    </view>
+  </view>
+</view>
