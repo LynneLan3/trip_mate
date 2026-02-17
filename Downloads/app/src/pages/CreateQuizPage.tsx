@@ -241,7 +241,7 @@ export default function CreateQuizPage() {
             quiz_id: quizId,
             question_code: questionCode,
             display_order: i + 1,
-          });
+          } as any);
 
         if (linkError) throw linkError;
       }
