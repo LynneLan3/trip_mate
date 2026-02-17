@@ -62,23 +62,23 @@ export default function Layout({ user }: LayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5DC]">
-      {/* 导航栏 */}
-      <nav className="bg-[#2D5A27] text-white shadow-lg">
+    <div className="min-h-screen">
+      {/* 导航栏 - 磨玻璃效果 */}
+      <nav className="glass-dark text-white shadow-2xl sticky top-0 z-50 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
-              <ClipboardList className="w-6 h-6" />
-              <span className="text-xl font-bold">驴友匹配</span>
+            {/* Logo - 添加动画效果 */}
+            <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition-all duration-300 hover:scale-105">
+              <ClipboardList className="w-6 h-6 animate-float" />
+              <span className="text-xl font-bold tracking-wide">驴友匹配</span>
             </Link>
 
             {/* 导航链接 */}
             <div className="flex items-center gap-6">
               <Link 
                 to="/" 
-                className={`flex items-center gap-1 hover:opacity-90 transition-opacity ${
-                  isActive('/') && !isActive('/matches') ? 'text-[#D4A574]' : ''
+                className={`flex items-center gap-1 hover:opacity-90 transition-all duration-300 hover:scale-110 px-3 py-2 rounded-lg hover:bg-white/10 ${
+                  isActive('/') && !isActive('/matches') ? 'text-[#D4A574] bg-white/15' : ''
                 }`}
               >
                 <Home className="w-4 h-4" />
@@ -87,14 +87,14 @@ export default function Layout({ user }: LayoutProps) {
               
               <Link 
                 to="/matches" 
-                className={`flex items-center gap-1 hover:opacity-90 transition-opacity relative ${
-                  isActive('/matches') ? 'text-[#D4A574]' : ''
+                className={`flex items-center gap-1 hover:opacity-90 transition-all duration-300 hover:scale-110 relative px-3 py-2 rounded-lg hover:bg-white/10 ${
+                  isActive('/matches') ? 'text-[#D4A574] bg-white/15' : ''
                 }`}
               >
                 <Heart className="w-4 h-4" />
                 <span className="hidden sm:inline">我的匹配</span>
                 {pendingCount > 0 && (
-                  <span className="absolute -top-2 -right-3 bg-[#FF6B35] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-[#FF6B35] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse shadow-lg">
                     {pendingCount}
                   </span>
                 )}
@@ -102,8 +102,8 @@ export default function Layout({ user }: LayoutProps) {
               
               <Link 
                 to="/profile" 
-                className={`flex items-center gap-1 hover:opacity-90 transition-opacity ${
-                  isActive('/profile') ? 'text-[#D4A574]' : ''
+                className={`flex items-center gap-1 hover:opacity-90 transition-all duration-300 hover:scale-110 px-3 py-2 rounded-lg hover:bg-white/10 ${
+                  isActive('/profile') ? 'text-[#D4A574] bg-white/15' : ''
                 }`}
               >
                 <UserIcon className="w-4 h-4" />
@@ -129,7 +129,7 @@ export default function Layout({ user }: LayoutProps) {
       </nav>
 
       {/* 主内容区 */}
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-4 py-8 animate-fade-in-up">
         <Outlet />
       </main>
     </div>

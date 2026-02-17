@@ -339,7 +339,12 @@ export default function ResultPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2D5A27]" />
+        <div className="glass rounded-3xl p-8 shadow-2xl animate-scale-in">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="w-12 h-12 animate-spin text-[#2D5A27]" />
+            <p className="text-[#2D5A27] font-semibold text-lg">加载结果中...</p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -355,20 +360,23 @@ export default function ResultPage() {
   const shareUrl = `${window.location.origin}/quiz/${result.quiz_id}?from=${result.user_id}`;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-6 animate-fade-in-up">
       {/* 调试信息面板 */}
       <DebugInfo />
       
       {/* 结果卡片 */}
-      <Card className="shadow-xl border-0 overflow-hidden">
-        <div className="bg-gradient-to-br from-[#2D5A27] to-[#234a1f] p-8 text-white text-center">
-          <MapPin className="w-12 h-12 mx-auto mb-4 opacity-80" />
-          <h2 className="text-lg opacity-90 mb-2">你的旅行风格是</h2>
-          <h1 className="text-3xl font-bold mb-2">{result.tag}</h1>
-          <p className="text-white/80">总分: {result.score}/100</p>
+      <Card className="glass-card border-0 overflow-hidden shadow-2xl animate-scale-in shine-effect">
+        <div className="bg-gradient-to-br from-[#2D5A27] to-[#234a1f] p-10 text-white text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-white/5 backdrop-blur-sm"></div>
+          <div className="relative z-10">
+            <MapPin className="w-16 h-16 mx-auto mb-6 opacity-90 animate-float drop-shadow-2xl" />
+            <h2 className="text-xl opacity-95 mb-3 font-semibold tracking-wide">你的旅行风格是</h2>
+            <h1 className="text-5xl font-bold mb-4 drop-shadow-2xl">{result.tag}</h1>
+            <p className="text-white/90 text-lg font-medium">总分: {result.score}/100</p>
+          </div>
         </div>
-        <CardContent className="p-6">
-          <p className="text-gray-600 text-center leading-relaxed">
+        <CardContent className="p-8">
+          <p className="text-gray-700 text-center leading-relaxed text-lg">
             {getTagDescription()}
           </p>
         </CardContent>
@@ -376,29 +384,29 @@ export default function ResultPage() {
 
       {/* 好友信息和匹配度显示（受邀答题时） */}
       {matchInfo && matchInfo.otherUser && (
-        <Card className="shadow-lg border-0 overflow-hidden">
-          <div className="bg-gradient-to-br from-[#2D5A27]/10 to-[#234a1f]/5 p-6 border-b">
-            <div className="flex items-center gap-3 mb-4">
-              <Award className="w-6 h-6 text-[#2D5A27]" />
-              <h3 className="text-lg font-semibold text-[#2C3E50]">与好友的匹配结果</h3>
+        <Card className="glass-card border-0 overflow-hidden shadow-2xl animate-scale-in">
+          <div className="bg-gradient-to-br from-[#2D5A27]/20 to-[#234a1f]/10 p-8 border-b border-white/30">
+            <div className="flex items-center gap-4 mb-6">
+              <Award className="w-8 h-8 text-[#2D5A27] animate-float" />
+              <h3 className="text-2xl font-bold text-[#2C3E50]">💕 与好友的匹配结果</h3>
             </div>
             
             {/* 好友信息卡片 */}
-            <div className="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm">
-              <Avatar className="w-16 h-16 border-2 border-[#2D5A27]/20">
+            <div className="flex items-center gap-5 p-6 glass rounded-2xl shadow-lg hover:scale-105 transition-all duration-300">
+              <Avatar className="w-20 h-20 border-4 border-white/50 shadow-xl ring-2 ring-[#2D5A27]/20">
                 {matchInfo.otherUser.avatar_url ? (
                   <AvatarImage 
                     src={matchInfo.otherUser.avatar_url} 
                     alt={matchInfo.otherUser.nickname}
                   />
                 ) : (
-                  <AvatarFallback className="bg-[#2D5A27]/10 text-[#2D5A27] text-xl font-bold">
+                  <AvatarFallback className="bg-gradient-to-br from-[#2D5A27] to-[#234a1f] text-white text-2xl font-bold">
                     {matchInfo.otherUser.nickname.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 )}
               </Avatar>
               <div className="flex-1">
-                <h4 className="font-semibold text-[#2C3E50] text-lg">{matchInfo.otherUser.nickname}</h4>
+                <h4 className="font-bold text-[#2C3E50] text-xl mb-1">{matchInfo.otherUser.nickname}</h4>
                 <p className="text-sm text-gray-500 flex items-center gap-2 mt-1">
                   {matchInfo.otherUser.gender && (
                     <span>{matchInfo.otherUser.gender === 'male' ? '👨' : '👩'} {matchInfo.otherUser.gender === 'male' ? '男' : '女'}</span>
@@ -408,41 +416,41 @@ export default function ResultPage() {
                   )}
                 </p>
                 {matchInfo.otherResult && (
-                  <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 bg-[#2D5A27]/10 rounded-full">
-                    <MapPin className="w-3 h-3 text-[#2D5A27]" />
-                    <span className="text-xs font-medium text-[#2D5A27]">{matchInfo.otherResult.tag}</span>
+                  <div className="mt-2 inline-flex items-center gap-2 px-4 py-2 bg-[#2D5A27]/20 rounded-full shadow-sm backdrop-blur-sm">
+                    <MapPin className="w-4 h-4 text-[#2D5A27]" />
+                    <span className="text-sm font-bold text-[#2D5A27]">{matchInfo.otherResult.tag}</span>
                   </div>
                 )}
               </div>
             </div>
           </div>
 
-          <CardContent className="p-6">
+          <CardContent className="p-8">
             {/* 答案匹配度（主要显示） */}
-            <div className="mb-4">
-              <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Users className="w-5 h-5 text-blue-600" />
-                  <p className="text-sm text-blue-800 font-medium">答案匹配度</p>
+            <div className="mb-6">
+              <div className="text-center p-8 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl border-2 border-blue-300/50 shadow-xl shine-effect hover:scale-105 transition-all duration-300">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <Users className="w-7 h-7 text-blue-700" />
+                  <p className="text-base text-blue-900 font-bold">答案匹配度</p>
                 </div>
-                <div className="text-5xl font-bold text-blue-600 mb-2">
+                <div className="text-6xl font-bold text-blue-700 mb-4">
                   {matchInfo.answerMatchPercent}
-                  <span className="text-3xl">%</span>
+                  <span className="text-4xl">%</span>
                 </div>
-                <p className="text-sm text-blue-700">
-                  你们有 <span className="font-semibold">{matchInfo.answerMatchPercent}%</span> 的答案相同
+                <p className="text-base text-blue-800 font-medium">
+                  你们有 <span className="font-bold text-lg">{matchInfo.answerMatchPercent}%</span> 的答案相同
                 </p>
               </div>
             </div>
 
             {/* 风格匹配度（次要显示） */}
-            <div className="grid grid-cols-1 gap-3">
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  <span className="text-sm text-gray-600">风格相似度</span>
+            <div className="grid grid-cols-1 gap-4">
+              <div className="flex items-center justify-between p-5 glass rounded-2xl shadow-lg hover:scale-105 transition-all duration-300">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-green-500 shadow-lg animate-pulse"></div>
+                  <span className="text-base text-gray-700 font-semibold">风格相似度</span>
                 </div>
-                <span className="text-lg font-bold text-green-600">{matchInfo.matchPercent}%</span>
+                <span className="text-2xl font-bold text-green-600">{matchInfo.matchPercent}%</span>
               </div>
               
               {matchInfo.otherResult && (

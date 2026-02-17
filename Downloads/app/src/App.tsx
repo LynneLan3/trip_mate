@@ -11,6 +11,7 @@ import ResultPage from './pages/ResultPage';
 import MatchesPage from './pages/MatchesPage';
 import ProfilePage from './pages/ProfilePage';
 import AuthPage from './pages/AuthPage';
+import CreateQuizPage from './pages/CreateQuizPage';
 import Layout from './components/Layout';
 
 /** 未登录时跳转到登录页，并带上当前路径作为 redirect，以便登录后回到问卷等页面 */
@@ -98,8 +99,13 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F5F5DC]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2D5A27]"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="glass rounded-3xl p-8 shadow-2xl animate-scale-in">
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#2D5A27] border-t-transparent shadow-lg"></div>
+            <p className="text-[#2D5A27] font-semibold text-lg">加载中...</p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -111,6 +117,7 @@ function App() {
         <Route path="/auth" element={user ? <Navigate to="/" /> : <AuthPage />} />
         <Route path="/" element={user ? <Layout user={user} /> : <AuthRedirect />}>
           <Route index element={<HomePage />} />
+          <Route path="create-quiz" element={<CreateQuizPage />} />
           <Route path="quiz/:quizId" element={<QuizPage />} />
           <Route path="result/:resultId" element={<ResultPage />} />
           <Route path="matches" element={<MatchesPage />} />

@@ -194,7 +194,7 @@ export default function QuizPage() {
       );
       const tag = matchedRule?.tag || '未知类型';
 
-      // 保存答题结果：先尝试 (user_id, quiz_id) 唯一约束，不兼容时回退为仅 user_id
+      // 保存答题结果：先删除旧记录，再插入新记录（避免 upsert 约束问题）
       const row = {
         user_id: user.id,
         quiz_id: quizId,
@@ -204,36 +204,29 @@ export default function QuizPage() {
         created_at: new Date().toISOString(),
       } as any;
 
-      let resultData: { id: string } | null = null;
-      let resultError = await (async () => {
-        const { data, error } = await supabase
-          .from('quiz_results')
-          .upsert(row, { onConflict: 'user_id,quiz_id' })
-          .select('id')
-          .single();
-        resultData = data;
-        return error;
-      })();
+      // 删除该用户该问卷的旧记录
+      const { error: deleteError } = await supabase
+        .from('quiz_results')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('quiz_id', quizId);
 
-      if (resultError) {
-        const msg = (resultError as any).message || '';
-        const needUserOnly =
-          msg.includes('unique') && msg.includes('conflict') ||
-          msg.includes('no unique') ||
-          msg.includes('ON CONFLICT') ||
-          (resultError as any).code === '42710' ||
-          (resultError as any).code === '42P10';
-        if (needUserOnly) {
-          const fallback = await supabase
-            .from('quiz_results')
-            .upsert(row, { onConflict: 'user_id' })
-            .select('id')
-            .single();
-          if (fallback.error) throw fallback.error;
-          resultData = fallback.data;
-        } else {
-          throw resultError;
-        }
+      if (deleteError) {
+        console.error('删除旧记录失败:', deleteError);
+        // 继续执行，可能是没有旧记录
+      }
+
+      // 插入新记录
+      const { data: resultData, error: insertError } = await supabase
+        .from('quiz_results')
+        .insert(row)
+        .select('id')
+        .single();
+
+      if (insertError) {
+        console.error('插入记录失败:', insertError);
+        console.error('尝试插入的数据:', row);
+        throw insertError;
       }
 
       // 如果是受邀答题，创建匹配记录（只创建一条，避免重复）
@@ -295,16 +288,16 @@ export default function QuizPage() {
     <div className="max-w-2xl mx-auto">
       {/* 邀请提示 */}
       {inviteInfo && (
-        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-              <span className="text-blue-600 font-semibold">👋</span>
+        <div className="mb-6 p-5 glass rounded-2xl border-2 border-blue-200/50 shadow-xl animate-scale-in">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg animate-float">
+              <span className="text-white text-2xl font-semibold">👋</span>
             </div>
             <div>
-              <h3 className="font-semibold text-blue-900">
+              <h3 className="font-bold text-blue-900 text-lg">
                 {inviteInfo.nickname || '朋友'} 邀请你参与测试
               </h3>
-              <p className="text-blue-700 text-sm">
+              <p className="text-blue-700 text-sm mt-1">
                 完成测试后你们可以看到彼此的匹配度
               </p>
             </div>
@@ -313,18 +306,18 @@ export default function QuizPage() {
       )}
 
       {/* 进度条 */}
-      <div className="mb-8">
-        <div className="flex justify-between text-sm text-gray-500 mb-2">
+      <div className="mb-8 glass rounded-2xl p-4 shadow-lg">
+        <div className="flex justify-between text-sm text-gray-700 font-medium mb-3">
           <span>题目 {currentIndex + 1} / {questions.length}</span>
-          <span>{Math.round(progress)}%</span>
+          <span className="text-[#2D5A27] font-bold">{Math.round(progress)}%</span>
         </div>
-        <Progress value={progress} className="h-2" />
+        <Progress value={progress} className="h-3 shadow-inner" />
       </div>
 
       {/* 题目卡片 */}
-      <Card className="shadow-xl border-0">
-        <CardContent className="p-8">
-          <h2 className="text-xl font-semibold text-[#2C3E50] mb-6">
+      <Card className="glass-card border-0 shadow-2xl animate-scale-in">
+        <CardContent className="p-10">
+          <h2 className="text-2xl font-bold text-[#2C3E50] mb-8 leading-relaxed">
             {currentQuestion.question_text}
           </h2>
 
@@ -338,11 +331,11 @@ export default function QuizPage() {
                 key={option.id}
                 onClick={() => handleOptionSelect(option.id)}
                 className={`
-                  flex items-center space-x-3 p-4 rounded-xl border-2 cursor-pointer
-                  transition-all duration-200
+                  flex items-center space-x-4 p-5 rounded-2xl border-2 cursor-pointer
+                  transition-all duration-300 shine-effect
                   ${selectedOption === option.id 
-                    ? 'border-[#2D5A27] bg-[#2D5A27]/5' 
-                    : 'border-gray-100 hover:border-[#2D5A27]/30 hover:bg-gray-50'
+                    ? 'border-[#2D5A27] bg-[#2D5A27]/10 shadow-lg scale-105' 
+                    : 'border-white/40 hover:border-[#2D5A27]/40 hover:bg-white/60 hover:scale-102'
                   }
                 `}
               >
@@ -364,7 +357,7 @@ export default function QuizPage() {
           <Button
             onClick={handleNext}
             disabled={!selectedOption || submitting}
-            className="w-full mt-8 h-12 bg-[#2D5A27] hover:bg-[#234a1f] text-white"
+            className="w-full mt-10 h-14 bg-gradient-to-r from-[#2D5A27] to-[#234a1f] hover:from-[#234a1f] hover:to-[#1a3515] text-white text-lg font-bold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
           >
             {submitting ? (
               <Loader2 className="w-5 h-5 animate-spin" />

@@ -145,62 +145,62 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5DC] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-md animate-scale-in">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <ClipboardList className="w-10 h-10 text-[#2D5A27]" />
-          <h1 className="text-3xl font-bold text-[#2D5A27]">驴友匹配</h1>
+        <div className="flex items-center justify-center gap-4 mb-10">
+          <ClipboardList className="w-12 h-12 text-[#2D5A27] animate-float drop-shadow-lg" />
+          <h1 className="text-4xl font-bold text-white drop-shadow-2xl tracking-tight">驴友匹配</h1>
         </div>
 
-        <Card className="shadow-xl border-0">
-        <CardHeader className="text-center">
+        <Card className="glass-card shadow-2xl border-0">
+        <CardHeader className="text-center pb-6">
           {redirectMessage && (
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-blue-800 text-sm">{redirectMessage}</p>
+            <div className="mb-6 p-4 glass rounded-xl border-2 border-blue-200/50 shadow-lg animate-scale-in">
+              <p className="text-blue-800 text-sm font-medium">{redirectMessage}</p>
             </div>
           )}
-          <CardTitle className="text-2xl text-[#2C3E50]">
-            {isLogin ? '欢迎回来' : '创建账号'}
+          <CardTitle className="text-3xl text-[#2C3E50] font-bold mb-2">
+            {isLogin ? '👋 欢迎回来' : '🌟 创建账号'}
           </CardTitle>
-          <CardDescription className="text-gray-500">
+          <CardDescription className="text-gray-600 text-base">
             {isLogin 
               ? '登录后继续探索你的旅行风格' 
               : '注册后发现志同道合的旅行伙伴'}
           </CardDescription>
         </CardHeader>
           
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <CardContent className="pt-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="email">邮箱</Label>
+                <Label htmlFor="email" className="text-sm font-semibold text-gray-700">邮箱</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="your@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-12"
+                  className="h-14 glass-input text-base"
                   disabled={loading}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">密码</Label>
+                <Label htmlFor="password" className="text-sm font-semibold text-gray-700">密码</Label>
                 <Input
                   id="password"
                   type="password"
                   placeholder="至少6位密码"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-12"
+                  className="h-14 glass-input text-base"
                   disabled={loading}
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-[#2D5A27] hover:bg-[#234a1f] text-white"
+                className="w-full h-14 bg-gradient-to-r from-[#2D5A27] to-[#234a1f] hover:from-[#234a1f] hover:to-[#1a3515] text-white text-base font-bold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
                 disabled={loading}
               >
                 {loading ? (
@@ -211,24 +211,26 @@ export default function AuthPage() {
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
+            <div className="mt-8 text-center">
               <button
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-[#2D5A27] hover:underline text-sm"
+                className="text-[#2D5A27] hover:text-[#234a1f] font-semibold text-base transition-all duration-300 hover:scale-105 inline-block"
                 disabled={loading}
               >
                 {isLogin 
-                  ? '还没有账号？立即注册' 
-                  : '已有账号？立即登录'}
+                  ? '还没有账号？立即注册 →' 
+                  : '已有账号？立即登录 →'}
               </button>
             </div>
           </CardContent>
         </Card>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
-          完成测试，发现你的旅行风格，找到志同道合的伙伴
-        </p>
+        <div className="text-center mt-8 glass rounded-2xl p-4 shadow-lg">
+          <p className="text-sm text-gray-700 font-medium">
+            ✈️ 完成测试，发现你的旅行风格，找到志同道合的伙伴
+          </p>
+        </div>
       </div>
     </div>
   );
