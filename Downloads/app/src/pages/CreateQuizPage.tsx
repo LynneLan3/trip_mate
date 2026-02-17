@@ -197,12 +197,12 @@ export default function CreateQuizPage() {
           title: quizTitle,
           description: quizDescription,
           scoring_rules: scoringRules,
-        })
+        } as any)
         .select('id')
         .single();
 
       if (quizError) throw quizError;
-      const quizId = quizData.id;
+      const quizId = (quizData as any).id;
 
       // 2. 批量创建题目和选项
       for (let i = 0; i < questions.length; i++) {
@@ -216,7 +216,7 @@ export default function CreateQuizPage() {
             question_code: questionCode,
             question_text: question.question_text,
             category: 'custom',
-          });
+          } as any);
 
         if (questionError) throw questionError;
 
@@ -230,7 +230,7 @@ export default function CreateQuizPage() {
 
         const { error: optionsError } = await supabase
           .from('options')
-          .insert(optionsToInsert);
+          .insert(optionsToInsert as any);
 
         if (optionsError) throw optionsError;
 
