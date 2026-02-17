@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
-import { Loader2, User, Mail, MapPin, Save, Edit3, Upload, Camera } from 'lucide-react';
+import { Loader2, User, Mail, MapPin, Save, Edit3, Camera } from 'lucide-react';
 
 interface UserProfile {
   id: string;
@@ -247,8 +247,13 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F5F5DC]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2D5A27]"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="glass rounded-3xl p-8 shadow-2xl animate-scale-in">
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#2D5A27] border-t-transparent shadow-lg"></div>
+            <p className="text-[#2D5A27] font-semibold text-lg">加载中...</p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -256,12 +261,12 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       {/* 页面标题 */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-[#2C3E50]">个人中心</h1>
-        <p className="text-gray-600 mt-2">管理你的个人资料和联系方式</p>
+      <div className="text-center glass rounded-3xl p-8 shadow-2xl animate-scale-in">
+        <h1 className="text-4xl font-bold text-[#2C3E50] mb-3">👤 个人中心</h1>
+        <p className="text-gray-700 text-lg">管理你的个人资料和联系方式</p>
         {editing && (!profile?.nickname || !profile?.contact_info) && (
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg max-w-2xl mx-auto">
-            <p className="text-blue-800 text-sm">
+          <div className="mt-6 p-4 glass rounded-2xl border-2 border-blue-200/50 max-w-2xl mx-auto shadow-lg">
+            <p className="text-blue-800 font-medium">
               👋 欢迎！请完成必填项后即可开始问卷测试
             </p>
           </div>
@@ -271,16 +276,16 @@ export default function ProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* 左侧：基本信息卡片 */}
         <div className="lg:col-span-1">
-          <Card className="shadow-lg border-0">
-            <CardContent className="p-6">
+          <Card className="glass-card border-0 shadow-2xl animate-fade-in-up">
+            <CardContent className="p-8">
               <div className="text-center space-y-4">
                 {/* 头像 */}
                 <div className="flex justify-center">
                   <div className="relative group">
-                    <Avatar className="w-24 h-24">
+                    <Avatar className="w-32 h-32 ring-4 ring-white/50 shadow-2xl">
                       <AvatarImage src={formData.avatar_url || DEFAULT_AVATAR_URL} alt="头像" />
-                      <AvatarFallback className="bg-[#2D5A27] text-white text-2xl">
-                        {formData.nickname.charAt(0).toUpperCase() || <User className="w-8 h-8" />}
+                      <AvatarFallback className="bg-gradient-to-br from-[#2D5A27] to-[#234a1f] text-white text-3xl">
+                        {formData.nickname.charAt(0).toUpperCase() || <User className="w-10 h-10" />}
                       </AvatarFallback>
                     </Avatar>
                     {editing && (
@@ -296,7 +301,7 @@ export default function ProfilePage() {
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
                           disabled={uploading}
-                          className="absolute inset-0 w-24 h-24 rounded-full bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute inset-0 w-32 h-32 rounded-full bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
                         >
                           {uploading ? (
                             <Loader2 className="w-6 h-6 text-white animate-spin" />
@@ -316,12 +321,12 @@ export default function ProfilePage() {
 
                 {/* 昵称 */}
                 <div>
-                  <h2 className="text-xl font-semibold text-[#2C3E50]">
+                  <h2 className="text-2xl font-bold text-[#2C3E50] mb-2">
                     {formData.nickname || '未设置昵称'}
                   </h2>
                   {formData.province && (
-                    <p className="text-gray-500 flex items-center justify-center gap-1">
-                      <MapPin className="w-4 h-4" />
+                    <p className="text-gray-600 flex items-center justify-center gap-2 font-medium">
+                      <MapPin className="w-5 h-5" />
                       {formData.province}
                     </p>
                   )}
@@ -329,14 +334,14 @@ export default function ProfilePage() {
 
                 {/* 个人简介 */}
                 {formData.bio && (
-                  <p className="text-gray-600 text-sm">{formData.bio}</p>
+                  <p className="text-gray-700 text-base leading-relaxed">{formData.bio}</p>
                 )}
 
                 {/* 联系方式预览 */}
                 {formData.contact_info && (
-                  <div className="bg-gray-50 rounded-lg p-3 text-left">
-                    <p className="text-sm text-gray-600 mb-1">联系方式：</p>
-                    <p className="text-sm font-medium">{formData.contact_info}</p>
+                  <div className="glass rounded-2xl p-4 text-left shadow-inner">
+                    <p className="text-sm text-gray-600 mb-2 font-semibold">联系方式</p>
+                    <p className="text-base font-medium text-[#2C3E50]">{formData.contact_info}</p>
                   </div>
                 )}
 
@@ -344,9 +349,9 @@ export default function ProfilePage() {
                 {!editing && (
                   <Button
                     onClick={() => setEditing(true)}
-                    className="w-full bg-[#2D5A27] hover:bg-[#234a1f] text-white"
+                    className="w-full bg-gradient-to-r from-[#2D5A27] to-[#234a1f] hover:from-[#234a1f] hover:to-[#1a3515] text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 h-12 text-base font-bold"
                   >
-                    <Edit3 className="w-4 h-4 mr-2" />
+                    <Edit3 className="w-5 h-5 mr-2" />
                     编辑资料
                   </Button>
                 )}
@@ -355,9 +360,9 @@ export default function ProfilePage() {
           </Card>
 
           {/* 账号信息 */}
-          <Card className="shadow-lg border-0 mt-4">
+          <Card className="glass-card border-0 mt-6 shadow-2xl">
             <CardContent className="p-6">
-              <h3 className="text-lg font-semibold text-[#2C3E50] mb-4">账号信息</h3>
+              <h3 className="text-xl font-bold text-[#2C3E50] mb-5">📧 账号信息</h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <Mail className="w-4 h-4 text-gray-400" />
@@ -382,32 +387,34 @@ export default function ProfilePage() {
 
         {/* 右侧：编辑表单 */}
         <div className="lg:col-span-2">
-          <Card className="shadow-lg border-0">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold text-[#2C3E50] mb-6">编辑个人资料</h3>
+          <Card className="glass-card border-0 shadow-2xl animate-fade-in-up">
+            <CardContent className="p-8">
+              <h3 className="text-2xl font-bold text-[#2C3E50] mb-8">✏️ 编辑个人资料</h3>
               
               <div className="space-y-6">
                 {/* 基本信息 */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="nickname">昵称</Label>
+                    <Label htmlFor="nickname" className="text-sm font-bold text-gray-700">昵称</Label>
                     <Input
                       id="nickname"
                       placeholder="给自己起个名字"
                       value={formData.nickname}
                       onChange={(e) => setFormData({ ...formData, nickname: e.target.value })}
                       disabled={!editing}
+                      className="glass-input h-12"
                     />
-                    <p className="text-xs text-red-500">* 必填项</p>
+                    <p className="text-xs text-red-600 font-semibold">* 必填项</p>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="province">所在地区</Label>
+                    <Label htmlFor="province" className="text-sm font-bold text-gray-700">所在地区</Label>
                     <Input
                       id="province"
                       placeholder="如：北京、上海等"
                       value={formData.province}
                       onChange={(e) => setFormData({ ...formData, province: e.target.value })}
                       disabled={!editing}
+                      className="glass-input h-12"
                     />
                   </div>
                 </div>
@@ -457,7 +464,7 @@ export default function ProfilePage() {
 
                 {/* 联系方式 */}
                 <div className="space-y-2">
-                  <Label htmlFor="contact_info">联系方式</Label>
+                  <Label htmlFor="contact_info" className="text-sm font-bold text-gray-700">联系方式</Label>
                   <Input
                     id="contact_info"
                     placeholder="微信号 / 手机号 / QQ号（匹配成功后可见）"
@@ -465,13 +472,14 @@ export default function ProfilePage() {
                     onChange={(e) => setFormData({ ...formData, contact_info: e.target.value })}
                     disabled={!editing}
                     required
+                    className="glass-input h-12"
                   />
-                  <p className="text-xs text-red-500">* 必填项，只有双方互相匹配成功后才会显示给对方</p>
+                  <p className="text-xs text-red-600 font-semibold">* 必填项，只有双方互相匹配成功后才会显示给对方</p>
                 </div>
 
                 {/* 个人简介 */}
                 <div className="space-y-2">
-                  <Label htmlFor="bio">个人简介</Label>
+                  <Label htmlFor="bio" className="text-sm font-bold text-gray-700">个人简介</Label>
                   <Textarea
                     id="bio"
                     placeholder="简单介绍一下自己，比如兴趣爱好、旅行经历等..."
@@ -479,6 +487,7 @@ export default function ProfilePage() {
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                     disabled={!editing}
                     rows={4}
+                    className="glass-input resize-none"
                   />
                 </div>
 
@@ -497,13 +506,13 @@ export default function ProfilePage() {
                     <Button
                       onClick={handleSave}
                       disabled={saving || !formData.nickname.trim() || !formData.contact_info?.trim()}
-                      className={`${profile?.nickname && profile?.contact_info ? 'flex-1' : 'w-full'} bg-[#2D5A27] hover:bg-[#234a1f] text-white`}
+                      className={`${profile?.nickname && profile?.contact_info ? 'flex-1' : 'w-full'} bg-gradient-to-r from-[#2D5A27] to-[#234a1f] hover:from-[#234a1f] hover:to-[#1a3515] text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 h-14 text-base font-bold`}
                     >
                       {saving ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
                         <>
-                          <Save className="w-4 h-4 mr-2" />
+                          <Save className="w-5 h-5 mr-2" />
                           保存并继续
                         </>
                       )}

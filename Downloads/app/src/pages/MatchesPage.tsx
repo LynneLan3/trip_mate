@@ -7,8 +7,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Loader2, Users, Heart, Check, Eye, Copy, ClipboardList, Award } from 'lucide-react';
+import { Loader2, Users, Heart, Check, Eye, Copy, ClipboardList, Award, XCircle } from 'lucide-react';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface MatchWithDetails {
   id: string;
@@ -41,8 +42,11 @@ interface MatchWithDetails {
   matchScore: number; // 匹配度百分比
 }
 
+type MatchFilter = 'all' | 'matched' | 'rejected';
+
 export default function MatchesPage() {
   const [matches, setMatches] = useState<MatchWithDetails[]>([]);
+  const [filter, setFilter] = useState<MatchFilter>('all');
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const [contactInfo, setContactInfo] = useState<{ 
@@ -54,6 +58,14 @@ export default function MatchesPage() {
     bio?: string | null;
   } | null>(null);
   const [loadingContact, setLoadingContact] = useState(false);
+
+  // 根据筛选条件过滤匹配记录
+  const filteredMatches = matches.filter(match => {
+    if (filter === 'all') return true;
+    if (filter === 'matched') return match.status === 'matched';
+    if (filter === 'rejected') return match.status === 'rejected';
+    return true;
+  });
 
   // 计算待处理匹配数量
   const pendingMatchesCount = matches.filter(match => {
@@ -99,12 +111,11 @@ export default function MatchesPage() {
         }
         setCurrentUserId(user.id);
 
-        // 获取匹配记录（排除已拒绝的）
+        // 获取匹配记录（包含全部状态：pending、matched、rejected）
         const { data: matchesData, error: matchesError } = await supabase
           .from('matches')
           .select('*')
           .or(`requester_id.eq.${user.id},receiver_id.eq.${user.id}`)
-          .neq('status', 'rejected')
           .order('created_at', { ascending: false });
 
         if (matchesError) throw matchesError;
@@ -199,12 +210,15 @@ export default function MatchesPage() {
         updateData.status = 'matched';
       }
 
-      const { error } = await (supabase
+      const { data: updated, error } = await (supabase
         .from('matches') as any)
         .update(updateData)
-        .eq('id', matchId);
+        .eq('id', matchId)
+        .select()
+        .single();
 
       if (error) throw error;
+      if (!updated) throw new Error('更新失败');
 
       toast.success(willBeMatched ? '匹配成功！' : '已发送同意请求');
 
@@ -230,12 +244,15 @@ export default function MatchesPage() {
       const match = matches.find(m => m.id === matchId);
       if (!match) return;
 
-      const { error } = await (supabase
+      const { data: updated, error } = await (supabase
         .from('matches') as any)
         .update({ status: 'rejected' })
-        .eq('id', matchId);
+        .eq('id', matchId)
+        .select()
+        .single();
 
       if (error) throw error;
+      if (!updated) throw new Error('更新失败');
 
       toast.success('已拒绝该匹配请求');
 
@@ -332,33 +349,62 @@ export default function MatchesPage() {
     );
   }
 
+  const filterEmptyMessage =
+    filter === 'matched' ? '暂无已同意的匹配记录'
+    : filter === 'rejected' ? '暂无已拒绝的匹配记录'
+    : null;
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-[#2C3E50]">我的匹配</h1>
-          {pendingMatchesCount > 0 && (
-            <Badge className="bg-orange-500 hover:bg-orange-600 animate-pulse">
-              {pendingMatchesCount} 个待处理
-            </Badge>
-          )}
+      <div className="glass rounded-3xl p-6 shadow-2xl animate-scale-in">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-bold text-[#2C3E50]">💕 我的匹配</h1>
+            {pendingMatchesCount > 0 && (
+              <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 animate-pulse shadow-lg text-base px-4 py-2">
+                {pendingMatchesCount} 个待处理
+              </Badge>
+            )}
+          </div>
+          <span className="text-gray-700 font-medium">共 {matches.length} 条记录</span>
         </div>
-        <span className="text-gray-500 text-sm">共 {matches.length} 条记录</span>
+
+        {/* 分类筛选标签 */}
+        <Tabs value={filter} onValueChange={(v) => setFilter(v as MatchFilter)}>
+          <TabsList className="mt-4 w-full grid grid-cols-3 bg-gray-100/80">
+            <TabsTrigger value="all" className="data-[state=active]:bg-[#2D5A27] data-[state=active]:text-white">
+              全部 ({matches.length})
+            </TabsTrigger>
+            <TabsTrigger value="matched" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
+              已同意 ({matches.filter(m => m.status === 'matched').length})
+            </TabsTrigger>
+            <TabsTrigger value="rejected" className="data-[state=active]:bg-red-500 data-[state=active]:text-white">
+              已拒绝 ({matches.filter(m => m.status === 'rejected').length})
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
       <div className="space-y-4">
-        {matches.map((match) => {
+        {filteredMatches.length === 0 && filterEmptyMessage ? (
+          <div className="text-center py-16 glass rounded-2xl">
+            <XCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-500">{filterEmptyMessage}</p>
+            <p className="text-sm text-gray-400 mt-1">试试切换其他分类查看</p>
+          </div>
+        ) : (
+        filteredMatches.map((match) => {
           const isRequester = match.requester_id === currentUserId;
           const myAgreed = isRequester ? match.requester_agreed : match.receiver_agreed;
           const otherAgreed = isRequester ? match.receiver_agreed : match.requester_agreed;
 
           return (
-            <Card key={match.id} className="shadow-lg border-0">
-              <CardContent className="p-6">
+            <Card key={match.id} className="glass-card border-0 shadow-2xl shine-effect animate-fade-in-up">
+              <CardContent className="p-8">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-[#2D5A27]/10 flex items-center justify-center overflow-hidden">
+                    <div className="flex items-center gap-4 mb-4">
+                    <div className="w-14 h-14 rounded-full bg-[#2D5A27]/20 flex items-center justify-center overflow-hidden shadow-lg ring-2 ring-white/50 transition-transform duration-300 hover:scale-110">
                       {match.otherUser.avatar_url ? (
                         <img 
                           src={match.otherUser.avatar_url} 
@@ -366,11 +412,11 @@ export default function MatchesPage() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <Heart className="w-5 h-5 text-[#2D5A27]" />
+                        <Heart className="w-6 h-6 text-[#2D5A27]" />
                       )}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-[#2C3E50]">
+                      <h3 className="font-bold text-[#2C3E50] text-lg">
                         {match.otherUser.nickname}
                       </h3>
                       <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -397,18 +443,20 @@ export default function MatchesPage() {
                     </div>
 
                     {/* 匹配度 */}
-                    <div className="mb-3 flex items-center gap-2">
-                      <Award className="w-4 h-4 text-[#2D5A27]" />
-                      <span className="text-sm text-gray-600">匹配度：</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-[#2D5A27]">{match.matchScore}%</span>
-                        <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden" style={{ minWidth: '100px' }}>
+                    <div className="mb-4 p-4 glass rounded-2xl">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Award className="w-5 h-5 text-[#2D5A27]" />
+                        <span className="text-sm text-gray-700 font-semibold">匹配度</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl font-bold text-[#2D5A27]">{match.matchScore}%</span>
+                        <div className="flex-1 h-3 bg-gray-200/50 rounded-full overflow-hidden shadow-inner" style={{ minWidth: '120px' }}>
                           <div 
-                            className={`h-full transition-all ${
-                              match.matchScore >= 80 ? 'bg-green-500' :
-                              match.matchScore >= 60 ? 'bg-[#2D5A27]' :
-                              match.matchScore >= 40 ? 'bg-orange-500' :
-                              'bg-red-500'
+                            className={`h-full transition-all duration-500 shadow-sm ${
+                              match.matchScore >= 80 ? 'bg-gradient-to-r from-green-400 to-green-600' :
+                              match.matchScore >= 60 ? 'bg-gradient-to-r from-[#2D5A27] to-[#234a1f]' :
+                              match.matchScore >= 40 ? 'bg-gradient-to-r from-orange-400 to-orange-600' :
+                              'bg-gradient-to-r from-red-400 to-red-600'
                             }`}
                             style={{ width: `${match.matchScore}%` }}
                           />
@@ -442,7 +490,7 @@ export default function MatchesPage() {
                         <Button
                           size="sm"
                           onClick={() => handleAgree(match.id)}
-                          className="bg-[#2D5A27] hover:bg-[#234a1f] text-white"
+                          className="bg-gradient-to-r from-[#2D5A27] to-[#234a1f] hover:from-[#234a1f] hover:to-[#1a3515] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                         >
                           <Check className="w-4 h-4 mr-1" />
                           同意交换
@@ -556,7 +604,8 @@ export default function MatchesPage() {
               </CardContent>
             </Card>
           );
-        })}
+        })
+        )}
       </div>
     </div>
   );
