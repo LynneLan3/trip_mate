@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import { Loader2, Plus, Trash2, Save, ArrowLeft } from 'lucide-react';
+import { Loader2, Plus, Trash2, Save, ArrowLeft, Globe, Lock } from 'lucide-react';
 
 interface QuestionData {
   id: string;
@@ -28,6 +29,7 @@ export default function CreateQuizPage() {
   
   const [quizTitle, setQuizTitle] = useState('');
   const [quizDescription, setQuizDescription] = useState('');
+  const [isPublic, setIsPublic] = useState(false); // 默认隐私
   const [questions, setQuestions] = useState<QuestionData[]>([
     {
       id: '1',
@@ -197,12 +199,15 @@ export default function CreateQuizPage() {
           title: quizTitle,
           description: quizDescription,
           scoring_rules: scoringRules,
+          is_public: isPublic,
+          creator_id: user.id,
         } as any)
         .select('id')
         .single();
 
       if (quizError) throw quizError;
-      const quizId = (quizData as any).id;
+      const quizId = (quizData as any)?.id;
+      if (!quizId) throw new Error('创建问卷失败');
 
       // 2. 批量创建题目和选项
       for (let i = 0; i < questions.length; i++) {
@@ -247,7 +252,7 @@ export default function CreateQuizPage() {
       }
 
       toast.success('问卷创建成功！');
-      navigate('/');
+      navigate('/my-quizzes');
     } catch (error: any) {
       console.error('创建问卷失败:', error);
       toast.error(error.message || '创建失败，请重试');
@@ -264,7 +269,7 @@ export default function CreateQuizPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/my-quizzes')}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             返回
@@ -312,6 +317,28 @@ export default function CreateQuizPage() {
               onChange={(e) => setQuizDescription(e.target.value)}
               rows={3}
               maxLength={200}
+            />
+          </div>
+          {/* 隐私/公开设置 */}
+          <div className="flex items-center justify-between p-4 rounded-xl bg-white/50 border border-white/40">
+            <div className="flex items-center gap-3">
+              {isPublic ? (
+                <Globe className="w-5 h-5 text-[#2D5A27]" />
+              ) : (
+                <Lock className="w-5 h-5 text-gray-500" />
+              )}
+              <div>
+                <p className="font-medium text-[#2C3E50]">
+                  {isPublic ? '公开问卷' : '私密问卷'}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {isPublic ? '所有人可在首页看到并参与' : '仅通过链接邀请才能参与'}
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={isPublic}
+              onCheckedChange={setIsPublic}
             />
           </div>
         </CardContent>

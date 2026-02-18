@@ -12,6 +12,8 @@ import MatchesPage from './pages/MatchesPage';
 import ProfilePage from './pages/ProfilePage';
 import AuthPage from './pages/AuthPage';
 import CreateQuizPage from './pages/CreateQuizPage';
+import MyQuizzesPage from './pages/MyQuizzesPage';
+import EditQuizPage from './pages/EditQuizPage';
 import Layout from './components/Layout';
 
 /** 未登录时跳转到登录页，并带上当前路径作为 redirect，以便登录后回到问卷等页面 */
@@ -118,6 +120,8 @@ function App() {
         <Route path="/" element={user ? <Layout user={user} /> : <AuthRedirect />}>
           <Route index element={<HomePage />} />
           <Route path="create-quiz" element={<CreateQuizPage />} />
+          <Route path="my-quizzes" element={<MyQuizzesPage />} />
+          <Route path="edit-quiz/:quizId" element={<EditQuizPage />} />
           <Route path="quiz/:quizId" element={<QuizPage />} />
           <Route path="result/:resultId" element={<ResultPage />} />
           <Route path="matches" element={<MatchesPage />} />

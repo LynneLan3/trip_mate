@@ -2,7 +2,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
 import { signOut } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Heart, LogOut, Home, ClipboardList, User as UserIcon } from 'lucide-react';
+import { Heart, LogOut, Home, ClipboardList, User as UserIcon, BookOpen } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -85,6 +85,16 @@ export default function Layout({ user }: LayoutProps) {
                 <span className="hidden sm:inline">首页</span>
               </Link>
               
+              <Link 
+                to="/my-quizzes" 
+                className={`flex items-center gap-1 hover:opacity-90 transition-all duration-300 hover:scale-110 px-3 py-2 rounded-lg hover:bg-white/10 ${
+                  isActive('/my-quizzes') || isActive('/create-quiz') || isActive('/edit-quiz') ? 'text-[#D4A574] bg-white/15' : ''
+                }`}
+              >
+                <BookOpen className="w-4 h-4" />
+                <span className="hidden sm:inline">问卷</span>
+              </Link>
+
               <Link 
                 to="/matches" 
                 className={`flex items-center gap-1 hover:opacity-90 transition-all duration-300 hover:scale-110 relative px-3 py-2 rounded-lg hover:bg-white/10 ${

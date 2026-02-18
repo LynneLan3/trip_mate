@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Loader2, ClipboardList, ArrowRight, Plus } from 'lucide-react';
+import { Loader2, ClipboardList, ArrowRight, BookOpen } from 'lucide-react';
 
 interface QuizWithCount {
   id: string;
@@ -21,24 +21,31 @@ export default function HomePage() {
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
-        // 获取问卷列表和题目数量
-        const { data, error } = await supabase
+        // 只获取公开问卷（is_public = true），或者 is_public 字段不存在时也展示（兼容旧数据）
+        const { data: quizzesData, error: quizzesError } = await supabase
           .from('quizzes')
-          .select(`
-            id,
-            title,
-            description,
-            quiz_questions(count)
-          `);
+          .select('id, title, description, is_public')
+          .or('is_public.eq.true,is_public.is.null')
+          .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (quizzesError) throw quizzesError;
 
-        const formattedData = (data || []).map((quiz: any) => ({
-          id: quiz.id,
-          title: quiz.title,
-          description: quiz.description,
-          question_count: quiz.quiz_questions?.[0]?.count || 0,
-        }));
+        // 为每个问卷获取题目数量
+        const formattedData = await Promise.all(
+          (quizzesData || []).map(async (quiz: any) => {
+            const { count } = await supabase
+              .from('quiz_questions')
+              .select('*', { count: 'exact', head: true })
+              .eq('quiz_id', quiz.id);
+
+            return {
+              id: quiz.id,
+              title: quiz.title,
+              description: quiz.description,
+              question_count: count || 0,
+            };
+          })
+        );
 
         setQuizzes(formattedData);
       } catch (error) {
@@ -81,11 +88,11 @@ export default function HomePage() {
           完成性格测试，了解你的旅行偏好，找到志同道合的驴友
         </p>
         <Button
-          onClick={() => navigate('/create-quiz')}
+          onClick={() => navigate('/my-quizzes')}
           className="bg-gradient-to-r from-[#2D5A27] to-[#234a1f] hover:from-[#234a1f] hover:to-[#1a3515] text-white shadow-lg hover:shadow-xl transition-all duration-300"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          创建自定义问卷
+          <BookOpen className="w-4 h-4 mr-2" />
+          我的问卷
         </Button>
       </div>
 

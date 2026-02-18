@@ -62,6 +62,8 @@ export interface Database {
           description: string | null
           scoring_rules: Json
           created_at: string | null
+          is_public: boolean
+          creator_id: string | null
         }
         Insert: {
           id?: string
@@ -69,6 +71,8 @@ export interface Database {
           description?: string | null
           scoring_rules: Json
           created_at?: string | null
+          is_public?: boolean
+          creator_id?: string | null
         }
         Update: {
           id?: string
@@ -76,6 +80,8 @@ export interface Database {
           description?: string | null
           scoring_rules?: Json
           created_at?: string | null
+          is_public?: boolean
+          creator_id?: string | null
         }
       }
       quiz_questions: {
